@@ -1,1 +1,23 @@
-<p>graph works!</p>
+<div *ngFor="let game of games">
+  <h5>
+    {{ game.name }}
+    <span class="badge badge-secondary">{{
+      game.counter.toString() || ""
+    }}</span>
+  </h5>
+</div>
+
+<div class="row" *ngIf="isLoaded">
+  <div class="offset-2 col-8">
+    <div style="display: block;">
+      <canvas
+        baseChart
+        width="400"
+        height="200"
+        [datasets]="lineChartData"
+        [labels]="lineChartLabels"
+        [chartType]="lineChartType"
+      ></canvas>
+    </div>
+  </div>
+</div>

@@ -8,6 +8,6 @@ export const disconnect = (client: Socket) => {
 };
 
 export const sendAnalytics = (io: socketIO.Server) => {
-  let data = [Math.random() * 10, Math.random() * 100];
-  io.emit("number-of-viewers", data);
+  // let data = [Math.random() * 10, Math.random() * 100];
+  // io.emit("number-of-viewers", data);
 };
