@@ -1,37 +1,76 @@
-import { Request, Response } from "express";
-import { GAMES, GameAnalytics } from "../global/gamesMetadata";
+const request = require("request-promise");
 import {
   TWITCH_BASE_URL_API,
   API_MAX_OBJECTS,
-  CLIENT_ID
+  CLIENT_ID,
+  TOKEN_TWITCH,
+  API_TOO_MANY_REQUEST_DELAY
 } from "../global/environment";
+import { GAMES, GameAnalytics } from "../global/gamesMetadata";
 import Server from "../classes/server";
-import { TOKEN_TWITCH } from "../global/environment";
+import { Request, Response } from "express";
+import {
+  TwitchStreamsResponse,
+  TwitchStreamsData
+} from "../dist/interfaces/twitch";
 
-const axios = require("axios").default;
 const server = Server.instance;
 
-function getViewersByGameIds(
-  data: any,
-  games: GameAnalytics[]
-): GameAnalytics[] {
-  const dataCopy: GameAnalytics[] = games.map(game => game);
-  const counters = {};
-  const timestamp = Date.now();
-  data.data.forEach((stream: any) => {
-    if (counters[stream.game_id] === undefined) {
-      counters[stream.game_id] = 0;
+export const makeApiRequest = async (req: Request, res: Response) => {
+  let dataFromTwitchApi: TwitchStreamsData[] = (await getStreams()) || [];
+  const dataTransformed: GameAnalytics[] = getViewersByGameIds(
+    dataFromTwitchApi,
+    GAMES
+  );
+  server.io.emit("number-of-viewers", dataTransformed);
+  res.json(dataTransformed);
+};
+
+const getStreams = async () => {
+  let streams: TwitchStreamsData[] = [];
+  let history: string[] = [];
+  let keepGoing = true;
+  let nextPosition: string = "";
+
+  while (keepGoing) {
+    // This is to avoid error 429 (TOO MANY REQUESTS)
+    await sleep(API_TOO_MANY_REQUEST_DELAY);
+    let response: TwitchStreamsResponse = await reqStreams(nextPosition);
+    if (response.pagination) {
+      nextPosition = response.pagination.cursor;
     }
-    counters[stream.game_id] += stream.viewer_count;
-  });
-  dataCopy.forEach(game => {
-    if (counters[game.id]) {
-      game.counter = counters[game.id];
-      game.timestamp = timestamp;
+    await streams.push.apply(streams, response.data);
+    let found = history.find(pointer => {
+      return pointer === nextPosition;
+    });
+    let lastPage = response.data.find(stream => stream.viewer_count === 0);
+    if (!nextPosition || found || lastPage) {
+      keepGoing = false;
+      return streams;
     }
-  });
-  return dataCopy;
+    await history.push.apply(history, [nextPosition]);
+  }
+};
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
+const reqStreams = async (pointer: string) => {
+  const config = {
+    method: "GET",
+    uri: createBaseUrl(
+      GAMES.map(game => game.id),
+      pointer
+    ),
+    json: true,
+    headers: {
+      "Client-ID": CLIENT_ID,
+      Authorization: `Bearer ${TOKEN_TWITCH}`
+    }
+  };
+  let payload = await request(config);
+  return payload;
+};
 
 function createBaseUrl(gamesId: string[], cursorPointer?: string) {
   return `${TWITCH_BASE_URL_API}?first=${API_MAX_OBJECTS}&`
@@ -39,24 +78,22 @@ function createBaseUrl(gamesId: string[], cursorPointer?: string) {
     .concat(cursorPointer ? `&after=${cursorPointer}` : "");
 }
 
-export function makeApiRequest(req: Request, res: Response) {
-  let config = {
-    headers: {
-      "Client-ID": CLIENT_ID,
-      authorization: `Bearer ${TOKEN_TWITCH}`
+function getViewersByGameIds(
+  dataFromTwitchApi: TwitchStreamsData[],
+  games: GameAnalytics[]
+): GameAnalytics[] {
+  const gamesCopy: GameAnalytics[] = games.map(game => game);
+  const counters = {};
+  dataFromTwitchApi.forEach((stream: any) => {
+    if (counters[stream.game_id] === undefined) {
+      counters[stream.game_id] = 0;
     }
-  };
-  axios
-    .get(createBaseUrl(GAMES.map(game => game.id)), config)
-    .then(function(response: any) {
-      // handle success
-      const dataTransformed = getViewersByGameIds(response.data, GAMES);
-      server.io.emit("number-of-viewers", dataTransformed);
-      console.log(dataTransformed, "===sent");
-      res.json(dataTransformed);
-    })
-    .catch(function(error: any) {
-      // handle error
-      console.log(error);
-    });
+    counters[stream.game_id] += stream.viewer_count;
+  });
+  gamesCopy.forEach(game => {
+    if (counters[game.id]) {
+      game.counter = counters[game.id];
+    }
+  });
+  return gamesCopy;
 }

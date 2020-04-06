@@ -31,13 +31,13 @@ export default class Server {
   }
 
   private getRealTimeData() {
-    axios("http://localhost:5000/games/analytics2");
+    axios("http://localhost:5000/games/analytics");
   }
   start() {
     this.httpServer.listen(this.port, () => {
       setInterval(() => {
         this.getRealTimeData();
-      }, 3000);
+      }, 1000000);
       console.log(`Server Running on ${this.port}`);
     });
   }

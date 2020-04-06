@@ -13,6 +13,6 @@ export class AnalyticsService {
   }
 
   getData() {
-    return this.http.get('http://localhost:5000/games/analytics2');
+    return this.http.get('http://localhost:5000/games/analytics');
   }
 }
