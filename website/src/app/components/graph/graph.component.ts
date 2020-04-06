@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { AnalyticsService } from '../../services/analytics.service';
 import { Subscription } from 'rxjs';
-import { ChartDataSets } from 'chart.js';
+import { ChartDataSets, ChartOptions } from 'chart.js';
 import { BaseChartDirective, Label } from 'ng2-charts';
 import { GAMES, GameAnalytics } from '../../../../../global/gamesMetadata';
 import { GraphService } from '../../services/graph.service';
@@ -34,14 +34,21 @@ export class GraphComponent implements OnInit, OnDestroy {
       }
     ];
   }
-
+  public lineChartOptions: ChartOptions & { annotation: any } = {
+    responsive: true,
+    animation: { duration: 0 },
+    annotation: {
+      annotations: [{}]
+    }
+  };
   ngOnInit() {
     this.getData();
     this.analyticsSubscription = this.analyticsService
       .getNumberOfViewersRealTime()
       .subscribe((data: any) => {
-        this.lineChartData = data.lineChartData;
-        this.lineChartLabels = data.lineChartLabels;
+        console.log(data, '===data');
+        this.games = data;
+        this.lineChartData = this.graphService.transformData(data);
         this.isLoaded = true;
       });
   }
@@ -51,7 +58,7 @@ export class GraphComponent implements OnInit, OnDestroy {
   }
 
   public updateChart(): void {
-    this.chart.update();
+    this.chart.update(0);
   }
 
   public getData() {

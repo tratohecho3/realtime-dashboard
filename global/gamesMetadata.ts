@@ -2,7 +2,6 @@ export interface GameAnalytics {
   name: string;
   id: string;
   counter?: number;
-  timestamp?: number;
 }
 
 export const GAMES: GameAnalytics[] = [

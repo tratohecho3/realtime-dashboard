@@ -3,6 +3,8 @@ import { SERVER_PORT } from "../global/environment";
 import socketIO from "socket.io";
 import http from "http";
 import * as socket from "../sockets/socket";
+const axios = require("axios").default;
+
 export default class Server {
   private static _instance: Server;
   public app: express.Application;
@@ -27,8 +29,15 @@ export default class Server {
       socket.disconnect(client);
     });
   }
+
+  private getRealTimeData() {
+    axios("http://localhost:5000/games/analytics2");
+  }
   start() {
     this.httpServer.listen(this.port, () => {
+      setInterval(() => {
+        this.getRealTimeData();
+      }, 3000);
       console.log(`Server Running on ${this.port}`);
     });
   }

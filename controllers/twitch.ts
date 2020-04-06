@@ -5,9 +5,11 @@ import {
   API_MAX_OBJECTS,
   CLIENT_ID
 } from "../global/environment";
-import { url } from "inspector";
+import Server from "../classes/server";
+import { TOKEN_TWITCH } from "../global/environment";
 
 const axios = require("axios").default;
+const server = Server.instance;
 
 function getViewersByGameIds(
   data: any,
@@ -40,7 +42,8 @@ function createBaseUrl(gamesId: string[], cursorPointer?: string) {
 export function makeApiRequest(req: Request, res: Response) {
   let config = {
     headers: {
-      "Client-ID": CLIENT_ID
+      "Client-ID": CLIENT_ID,
+      authorization: `Bearer ${TOKEN_TWITCH}`
     }
   };
   axios
@@ -48,6 +51,8 @@ export function makeApiRequest(req: Request, res: Response) {
     .then(function(response: any) {
       // handle success
       const dataTransformed = getViewersByGameIds(response.data, GAMES);
+      server.io.emit("number-of-viewers", dataTransformed);
+      console.log(dataTransformed, "===sent");
       res.json(dataTransformed);
     })
     .catch(function(error: any) {
