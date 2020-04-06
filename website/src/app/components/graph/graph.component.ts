@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { AnalyticsService } from '../../services/analytics.service';
 import { Subscription } from 'rxjs';
 import { ChartDataSets, ChartOptions } from 'chart.js';
-import { BaseChartDirective, Label } from 'ng2-charts';
+import { BaseChartDirective, Label, Color } from 'ng2-charts';
 import { GAMES, GameAnalytics } from '../../../../../global/gamesMetadata';
 import { GraphService } from '../../services/graph.service';
 
@@ -36,17 +36,54 @@ export class GraphComponent implements OnInit, OnDestroy {
   }
   public lineChartOptions: ChartOptions & { annotation: any } = {
     responsive: true,
+    title: {
+      fontColor: 'white'
+    },
+    legend: {
+      labels: {
+        fontColor: 'white'
+      }
+    },
+    scales: {
+      // We use this empty structure as a placeholder for dynamic theming.
+      xAxes: [
+        {
+          id: 'x-axis-0',
+          ticks: {
+            fontColor: 'white'
+          }
+        }
+      ],
+      yAxes: [
+        {
+          id: 'y-axis-0',
+          position: 'left',
+          ticks: {
+            fontColor: 'white'
+          }
+        }
+      ]
+    },
     animation: { duration: 0 },
     annotation: {
       annotations: [{}]
     }
   };
+  public lineChartColors: Color[] = [
+    {
+      backgroundColor: 'rgb(148,159,177,0.2)',
+      borderColor: 'white',
+      pointBackgroundColor: 'white',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'white'
+    }
+  ];
   ngOnInit() {
     this.getData();
     this.analyticsSubscription = this.analyticsService
       .getNumberOfViewersRealTime()
       .subscribe((data: any) => {
-        console.log(data, '===data');
         this.games = data;
         this.lineChartData = this.graphService.transformData(data);
         this.isLoaded = true;
