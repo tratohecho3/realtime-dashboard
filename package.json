@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently \"node dist/index.js\" \"(cd website && ng serve)\"",
-    "dev": "concurrently \"tsc -w\" \"nodemon dist\" \"(cd website && ng serve -o)\"",
+    "start-prod": "NODE_ENV=production node dist/index.js",
+    "start": "concurrently \"tsc -w\" \"nodemon dist\" \"(cd website && ng serve -o)\"",
+    "build": "npm run build-ts && npm run build-frontend",
     "build-ts": "tsc",
-    "build-frontend": "cd website && npm install && ng build --prod",
-    "postinstall": "npm run build-ts && cd website && npm install"
+    "build-frontend": "cd website && npm install && npm run build:client",
+    "postinstall": "npm run build-ts && npm run build-frontend"
   },
   "author": "Cesar Colina <tratohecho3@gmail.com> (https://www.linkedin.com/in/cesar-colina/)",
   "license": "ISC",
