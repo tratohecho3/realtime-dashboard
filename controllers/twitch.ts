@@ -18,6 +18,15 @@ const server = Server.instance;
 
 export const makeApiRequest = async (req: Request, res: Response) => {
   let dataFromTwitchApi: TwitchStreamsData[] = (await getStreams()) || [];
+  if (dataFromTwitchApi.length === 0) {
+    res.status(500).json({
+      error: {
+        statusCode: 500,
+        message: "Too Many Requests"
+      }
+    });
+    return;
+  }
   const dataTransformed: GameAnalytics[] = getViewersByGameIds(
     dataFromTwitchApi,
     GAMES
@@ -36,6 +45,9 @@ const getStreams = async () => {
     // This is to avoid error 429 (TOO MANY REQUESTS)
     await sleep(API_TOO_MANY_REQUEST_DELAY);
     let response: TwitchStreamsResponse = await reqStreams(nextPosition);
+    if (!response) {
+      return;
+    }
     if (response.pagination) {
       nextPosition = response.pagination.cursor;
     }
@@ -68,8 +80,13 @@ const reqStreams = async (pointer: string) => {
       Authorization: `Bearer ${TOKEN_TWITCH}`
     }
   };
-  let payload = await request(config);
-  return payload;
+  try {
+    let payload = await request(config);
+    return payload;
+  } catch (error) {
+    console.log(error, "===error");
+    return;
+  }
 };
 
 function createBaseUrl(gamesId: string[], cursorPointer?: string) {

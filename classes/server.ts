@@ -37,7 +37,7 @@ export default class Server {
     this.httpServer.listen(this.port, () => {
       setInterval(() => {
         this.getRealTimeData();
-      }, 1000000);
+      }, 25000);
       console.log(`Server Running on ${this.port}`);
     });
   }
