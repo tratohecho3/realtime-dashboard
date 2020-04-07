@@ -5,10 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cd website & npm run start",
+    "start-backend": "node dist/index.js",
+    "start-frontend": "cd website & npm run start",
+    "start": "npm run start-backend & npm run start-frontend",
     "dev": "concurrently \"tsc -w\" \"nodemon dist\" \"(cd website && ng serve -o)\"",
-    "build-ts": "tsc",
-    "postinstall": "npm run build-ts && cd website && npm install"
+    "build-backend": "tsc",
+    "build-frontend": "cd website && npm install && ng build --prod",
+    "postinstall": "npm run build-backend && npm run build-frontend"
   },
   "author": "Cesar Colina <tratohecho3@gmail.com> (https://www.linkedin.com/in/cesar-colina/)",
   "license": "ISC",
