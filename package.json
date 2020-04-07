@@ -11,7 +11,7 @@
     "dev": "concurrently \"tsc -w\" \"nodemon dist\" \"(cd website && ng serve -o)\"",
     "build-ts": "tsc",
     "build-frontend": "cd website && npm install && ng build --prod",
-    "postinstall": "cd website && npm install"
+    "postinstall": "npm run build-ts && cd website && npm install"
   },
   "author": "Cesar Colina <tratohecho3@gmail.com> (https://www.linkedin.com/in/cesar-colina/)",
   "license": "ISC",
