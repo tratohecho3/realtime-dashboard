@@ -9,7 +9,9 @@ const server = Server.instance;
 server.app.use(cors({ origin: true, credentials: true }));
 
 if (process.env.NODE_ENV === "production") {
-  server.app.use(express.static(path.join(process.cwd(), "/website/dist")));
+  server.app.use(
+    express.static(path.join(process.cwd(), "/website/dist/website"))
+  );
 }
 
 //ROUTES
