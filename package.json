@@ -10,7 +10,8 @@
     "start": "npm run start-backend & npm run start-frontend",
     "dev": "concurrently \"tsc -w\" \"nodemon dist\" \"(cd website && ng serve -o)\"",
     "build-frontend": "cd website && npm install && ng build --prod",
-    "postinstall": "tsc && npm run build-frontend"
+    "build-ts": "tsc",
+    "postinstall": "npm run build-ts && cd website && npm install"
   },
   "author": "Cesar Colina <tratohecho3@gmail.com> (https://www.linkedin.com/in/cesar-colina/)",
   "license": "ISC",
