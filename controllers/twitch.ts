@@ -9,10 +9,7 @@ import {
 import { GAMES, GameAnalytics } from "../global/gamesMetadata";
 import Server from "../classes/server";
 import { Request, Response } from "express";
-import {
-  TwitchStreamsResponse,
-  TwitchStreamsData
-} from "../dist/interfaces/twitch";
+import { TwitchStreamsResponse, TwitchStreamsData } from "../interfaces/twitch";
 
 const server = Server.instance;
 
