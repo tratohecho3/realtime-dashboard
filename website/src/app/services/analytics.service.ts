@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { WebsocketService } from './websocket.service';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,6 @@ export class AnalyticsService {
   }
 
   getData() {
-    return this.http.get('http://localhost:5000/games/analytics');
+    return this.http.get(`${environment.wsUrl}/games/analytics`);
   }
 }

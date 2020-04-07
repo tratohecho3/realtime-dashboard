@@ -1,5 +1,9 @@
 import express from "express";
-import { SERVER_PORT } from "../global/environment";
+import {
+  SERVER_PORT,
+  BASE_URL_DEV,
+  BASE_URL_PROD
+} from "../global/environment";
 import socketIO from "socket.io";
 import http from "http";
 import * as socket from "../sockets/socket";
@@ -31,7 +35,11 @@ export default class Server {
   }
 
   private getRealTimeData() {
-    axios("http://localhost:5000/games/analytics");
+    if (process.env.NODE_ENV === "production") {
+      axios(`${BASE_URL_PROD}/games/analytics`);
+    } else {
+      axios(`${BASE_URL_DEV}/games/analytics`);
+    }
   }
   start() {
     this.httpServer.listen(this.port, () => {
