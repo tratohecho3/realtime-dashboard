@@ -28,6 +28,6 @@
     "@types/socket.io": "^2.1.4"
   },
   "engines": {
-    "node": "10.x"
+    "node": "10.15.3"
   }
 }
