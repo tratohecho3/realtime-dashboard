@@ -5,9 +5,8 @@
 Run These 3 commands in order
 
 ```
-npm install
-cd website
-npm install
+npm run installation
+
 ```
 
 ## Put Your Twitch Api Credentials

@@ -10,6 +10,7 @@
     "build": "npm run build-ts && npm run build-frontend",
     "build-ts": "tsc",
     "build-frontend": "cd website && npm install && npm run build:client",
+    "installation": "npm install && cd website && npm install",
     "postinstall": "npm run build-ts && npm run build-frontend"
   },
   "author": "Cesar Colina <tratohecho3@gmail.com> (https://www.linkedin.com/in/cesar-colina/)",
