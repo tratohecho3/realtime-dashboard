@@ -6,6 +6,15 @@
 npm install
 ```
 
+## Put Your Twitch Api Credentials
+
+/global/environment.ts
+
+```js
+export const CLIENT_ID: string = process.env.CLIENT_ID || "";
+export const TOKEN_TWITCH: string = process.env.TOKEN_TWITCH || "";
+```
+
 ## Start Development Server
 
 ```
