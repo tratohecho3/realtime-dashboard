@@ -2,7 +2,11 @@
 
 ## Install dependencies
 
+Run These 3 commands in order
+
 ```
+npm install
+cd website
 npm install
 ```
 
@@ -18,7 +22,7 @@ export const TOKEN_TWITCH: string = process.env.TOKEN_TWITCH || "";
 ## Start Development Server
 
 ```
-npm run dev
+npm run start
 ```
 
 ## Build
